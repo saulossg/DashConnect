@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Home</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h3>DashConnect</h3>
+
+  <p>
+    Para mais informações acesse <a href="https://github.com/Bertoncini/DashConnect">DashConnect</a>.
+  </p>
+
+  <ion-fab bottom right>
+    <button ion-fab mini (click)="openConfigPage()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+
+  <ion-card *ngIf="selectedItem?.barra === true">
+      <ion-card-header>
+        {{selectedItem.NameRel}}
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #barCanvas></canvas>
+      </ion-card-content>
+    </ion-card>
+ 
+    <ion-card *ngIf="selectedItem?.pizza === true">
+      <ion-card-header>
+        {{selectedItem.NameRel}}
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #doughnutCanvas></canvas>
+      </ion-card-content>
+    </ion-card>
+ 
+    <ion-card *ngIf="selectedItem?.linha === true">
+      <ion-card-header>
+        {{selectedItem.NameRel}}
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #lineCanvas></canvas>
+      </ion-card-content>
+    </ion-card>
+
+</ion-content>

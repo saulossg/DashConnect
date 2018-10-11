@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Configuração de Relatório</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div>
+  </div>
+    <form (ngSubmit)="logForm()">
+      <ion-item>
+        <ion-label floating>Relatório</ion-label>
+        <ion-input type="text" [(ngModel)]="item.NameRel" name="Relatório"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>End-Point</ion-label>
+        <ion-input [(ngModel)]="item.UrlApi" name="End-Point"></ion-input>
+      </ion-item>
+      <ion-list>
+        <ion-item>
+          <ion-label>Grafico Barra</ion-label>
+          <ion-toggle [(ngModel)]="item.barra" [ngModelOptions]="{standalone: true}"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Grafico Linha</ion-label>
+          <ion-toggle [(ngModel)]="item.linha" [ngModelOptions]="{standalone: true}"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Grafico Pizza</ion-label>
+          <ion-toggle [(ngModel)]="item.pizza" [ngModelOptions]="{standalone: true}"></ion-toggle>
+        </ion-item>
+      </ion-list>
+      <button ion-button type="submit" block>Adicionar Relatório</button>
+    </form>    
+</ion-content>
