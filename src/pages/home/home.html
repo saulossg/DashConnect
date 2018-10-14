@@ -3,7 +3,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
+    <ion-title>{{Title}}</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -18,31 +18,76 @@
     <button ion-fab mini (click)="openConfigPage()"><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 
-  <ion-card *ngIf="selectedItem?.barra === true">
-      <ion-card-header>
-        {{selectedItem.NameRel}}
-      </ion-card-header>
-      <ion-card-content>
-        <canvas #barCanvas></canvas>
-      </ion-card-content>
-    </ion-card>
- 
-    <ion-card *ngIf="selectedItem?.pizza === true">
-      <ion-card-header>
-        {{selectedItem.NameRel}}
-      </ion-card-header>
-      <ion-card-content>
-        <canvas #doughnutCanvas></canvas>
-      </ion-card-content>
-    </ion-card>
- 
-    <ion-card *ngIf="selectedItem?.linha === true">
-      <ion-card-header>
-        {{selectedItem.NameRel}}
-      </ion-card-header>
-      <ion-card-content>
-        <canvas #lineCanvas></canvas>
-      </ion-card-content>
-    </ion-card>
+  <ion-card *ngIf="(selectedItem?.Grafico === 'barraH') || (selectedItem?.Grafico === 'barraV')">
+    <ion-card-header>
+      {{selectedItem.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #barCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="selectedItem?.Grafico === 'bolha'">
+    <ion-card-header>
+      {{selectedItem.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #bubbleCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="selectedItem?.Grafico === 'linha'">
+    <ion-card-header>
+      {{selectedItem.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #lineCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="selectedItem?.Grafico === 'mix'">
+    <ion-card-header>
+      {{selectedItem.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #mixedCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="(selectedItem?.Grafico === 'pizza') || (selectedItem?.Grafico === 'rosca')">
+    <ion-card-header>
+      {{selectedItem?.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #doughnutCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="selectedItem?.Grafico === 'polar'">
+    <ion-card-header>
+      {{selectedItem.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #polarCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="selectedItem?.Grafico === 'radar'">
+    <ion-card-header>
+      {{selectedItem.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #radarCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="selectedItem?.Grafico === 'scatter'">
+    <ion-card-header>
+      {{selectedItem.NameRel}}
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #scatterCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>
