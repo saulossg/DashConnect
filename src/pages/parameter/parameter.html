@@ -10,33 +10,62 @@
 <ion-content>
   <div>
   </div>
-    <form (ngSubmit)="logForm()">
+  <form (ngSubmit)="logForm()">
+    <ion-item>
+      <ion-label floating>Relatório</ion-label>
+      <ion-input type="text" [(ngModel)]="item.NameRel" name="Relatório"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>End-Point</ion-label>
+      <ion-input type="text" (focusout)="event()" [(ngModel)]="item.UrlApi" name="End-Point"></ion-input>
+    </ion-item>
+    <ion-list>
       <ion-item>
-        <ion-label floating>Relatório</ion-label>
-        <ion-input type="text" [(ngModel)]="item.NameRel" name="Relatório"></ion-input>
+        <ion-label floating>Gráfico</ion-label>
+        <ion-select [(ngModel)]="item.Grafico" [ngModelOptions]="{standalone: true}">
+          <ion-option value="area">Area</ion-option>
+          <ion-option value="barraH">Barra Horizontal</ion-option>
+          <ion-option value="barraV">Barra Vertical</ion-option>
+          <ion-option value="bolha">Bolha</ion-option>
+          <ion-option value="scatter">Dispersão</ion-option>
+          <ion-option value="linha">Linha</ion-option>
+          <ion-option value="mix">Mix (Barra e Linha)</ion-option>
+          <ion-option value="pizza">Pizza</ion-option>
+          <ion-option value="polar">Polar area</ion-option>
+          <ion-option value="radar">Radar</ion-option>
+          <ion-option value="rosca">Rosca</ion-option>
+        </ion-select>
       </ion-item>
-      <ion-item>
-        <ion-label floating>End-Point</ion-label>
-        <ion-input type="text" [(ngModel)]="item.UrlApi" name="End-Point"></ion-input>
-      </ion-item>
-      <ion-list>
-        <ion-item>
-          <ion-label>Gráfico</ion-label>
-          <ion-select [(ngModel)]="item.Grafico" [ngModelOptions]="{standalone: true}">
-            <ion-option value="area">Area</ion-option>
-            <ion-option value="barraH">Barra Horizontal</ion-option>
-            <ion-option value="barraV">Barra Vertical</ion-option>
-            <ion-option value="bolha">Bolha</ion-option>
-            <ion-option value="scatter">Dispersão</ion-option>
-            <ion-option value="linha">Linha</ion-option>
-            <ion-option value="mix">Mix (Barra e Linha)</ion-option>
-            <ion-option value="pizza">Pizza</ion-option>
-            <ion-option value="polar">Polar area</ion-option>
-            <ion-option value="radar">Radar</ion-option>
-            <ion-option value="rosca">Rosca</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-list>    
-      <button ion-button type="submit" block>Adicionar Relatório</button>
-    </form>    
+    </ion-list>
+    <ion-item>
+      <ion-label floating>Descrição</ion-label>
+      <ion-select [(ngModel)]="item.Descr" name="Descricao">
+        <div *ngFor="let field of retornoApi">
+          <ion-option value="{{field}}">{{field}}
+          </ion-option>
+        </div>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Valor</ion-label>
+      <ion-select [(ngModel)]="item.Value1" name="Valor1">
+        <div *ngFor="let field of retornoApi">
+          <ion-option value="{{field}}">{{field}}
+          </ion-option>
+        </div>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating>Valor</ion-label>
+      <ion-select [(ngModel)]="item.Value2" name="Valor1">
+        <div *ngFor="let field of retornoApi">
+          <ion-option value="{{field}}">{{field}}
+          </ion-option>
+        </div>
+      </ion-select>
+    </ion-item>
+
+    <button ion-button type="submit"  block>Adicionar Relatório</button>
+  </form>
 </ion-content>

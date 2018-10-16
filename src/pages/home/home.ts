@@ -35,41 +35,81 @@ export class HomePage {
     areaChart: any;
     mixedChart: any;
 
+    backgroundColors() {
+        return [
+            'rgba(255, 99, 132)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+            'rgba(255, 205, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(201, 203, 207, 0.2)']
+    }
+
+    borderColors() {
+        return [
+            'rgba(255, 99, 132)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+            'rgba(255, 205, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(201, 203, 207, 0.2)']
+    }
+
+    getValueToKeys(obj, findKey, estrutura, index, comb) {
+        var values = [];
+        comb += estrutura[0];
+
+        if (comb === findKey)
+            values = obj.map(function (k) { return k[estrutura[0]] });
+        else
+            values = this.getValueToKeys(obj[estrutura[0]], findKey, estrutura.slice(1, estrutura.length), index + 1, comb + '.');
+
+        return values;
+    }
+
     gerarRelatorio() {
         return new Promise((resolve, reject) => {
 
             this.http.get(this.selectedItem.UrlApi)
                 .subscribe((result: any) => {
-                    resolve(result.json());
-                    var chaves = Object.keys(result.json());
-                    var valores = Object.keys(result.json()).map(function (k) { return result.json()[k] });
+                    var estruturaChave = this.selectedItem.Descr.split(".");
+                    var estruturaValue1 = this.selectedItem.Value1.split(".");
+                    var datasetsValues = []
+                    var chaves = this.getValueToKeys(result.json(), this.selectedItem.Descr, estruturaChave, 0, '');
+
+                    if (this.selectedItem.Value1) {
+                        var valores = this.getValueToKeys(result.json(), this.selectedItem.Value1, estruturaValue1, 0, '');
+                        datasetsValues.push({
+                            label: estruturaValue1[estruturaValue1.length-1],
+                            data: valores,
+                            backgroundColor: this.backgroundColors()[0],
+                            borderColor: this.borderColors()[0],
+                            borderWidth: 1
+                        })
+                    }
+
+                    if (this.selectedItem.Value2) {
+                        var estruturaValue2 = this.selectedItem.Value2.split(".");
+                        var valores = this.getValueToKeys(result.json(), this.selectedItem.Value2, estruturaValue2, 0, '');
+                        datasetsValues.push({
+                            label: estruturaValue2[estruturaValue2.length-1],
+                            data: valores,
+                            backgroundColor: this.backgroundColors()[1],
+                            borderColor: this.borderColors()[1],
+                            borderWidth: 1
+                        })
+                    }
 
                     if (this.selectedItem.Grafico === 'barraH')
                         this.barChart = new Chart(this.barCanvas.nativeElement, {
                             type: 'horizontalBar',
                             data: {
                                 labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255,99,132,1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)',
-                                        'rgba(255, 159, 64, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
+                                datasets: datasetsValues
                             },
                             options: {
                                 scales: {
@@ -88,27 +128,16 @@ export class HomePage {
                             type: 'bar',
                             data: {
                                 labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255,99,132,1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)',
-                                        'rgba(255, 159, 64, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
+                                datasets: datasetsValues
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }],
+                                }
                             }
                         });
 
@@ -121,22 +150,8 @@ export class HomePage {
                                 datasets: [{
                                     label: this.selectedItem.NameRel,
                                     data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
-                                    hoverBackgroundColor: [
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56",
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56"
-                                    ]
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0]
                                 }]
                             }
                         });
@@ -152,8 +167,8 @@ export class HomePage {
                                         label: this.selectedItem.NameRel,
                                         fill: false,
                                         lineTension: 0.1,
-                                        backgroundColor: "rgba(75,192,192,0.4)",
-                                        borderColor: "rgba(75,192,192,1)",
+                                        backgroundColor: this.backgroundColors()[0],
+                                        borderColor: this.borderColors()[0],
                                         borderCapStyle: 'butt',
                                         borderDash: [],
                                         borderDashOffset: 0.0,
@@ -183,14 +198,8 @@ export class HomePage {
                                 datasets: [{
                                     label: this.selectedItem.NameRel,
                                     data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0],
                                     hoverBackgroundColor: [
                                         "#FF6384",
                                         "#36A2EB",
@@ -203,14 +212,8 @@ export class HomePage {
                                 {
                                     label: this.selectedItem.NameRel,
                                     data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0],
                                     hoverBackgroundColor: [
                                         "#FF6384",
                                         "#36A2EB",
@@ -232,14 +235,8 @@ export class HomePage {
                                 datasets: [{
                                     label: this.selectedItem.NameRel,
                                     data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0],
                                     hoverBackgroundColor: [
                                         "#FF6384",
                                         "#36A2EB",
@@ -260,14 +257,8 @@ export class HomePage {
                                 datasets: [{
                                     label: this.selectedItem.NameRel,
                                     data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0],
                                     hoverBackgroundColor: [
                                         "#FF6384",
                                         "#36A2EB",
@@ -287,10 +278,14 @@ export class HomePage {
                                 labels: chaves,
                                 datasets: [{
                                     label: this.selectedItem.NameRel,
-                                    data: valores
+                                    data: valores,
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0]
                                 }, {
                                     label: this.selectedItem.NameRel,
-                                    data: valores
+                                    data: valores,
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0]
                                 }]
                             }
                         });
@@ -303,14 +298,8 @@ export class HomePage {
                                 datasets: [{
                                     label: this.selectedItem.NameRel,
                                     data: valores,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
+                                    backgroundColor: this.backgroundColors()[0],
+                                    borderColor: this.borderColors()[0],
                                     hoverBackgroundColor: [
                                         "#FF6384",
                                         "#36A2EB",
