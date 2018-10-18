@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ToastController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { Chart } from 'chart.js';
 
@@ -71,11 +71,30 @@ export class HomePage {
         return values;
     }
 
+    exibirMensagem(mensagem: string) {
+        const toast = this.toastCtrl.create({
+            message: mensagem,
+            duration: 3000
+        });
+
+        toast.present();
+    }
+
     gerarRelatorio() {
         return new Promise((resolve, reject) => {
 
             this.http.get(this.selectedItem.UrlApi)
                 .subscribe((result: any) => {
+                    if (!this.selectedItem.Descr) {
+                        this.exibirMensagem('Não foi localizado o eixo de descrição do relatório.');
+                        return;
+                    }
+
+                    if (!this.selectedItem.Value1) {
+                        this.exibirMensagem('Não foi localizado o eixo de valore do relatório.');
+                        return;
+                    }
+
                     var estruturaChave = this.selectedItem.Descr.split(".");
                     var estruturaValue1 = this.selectedItem.Value1.split(".");
                     var datasetsValues = []
@@ -84,7 +103,7 @@ export class HomePage {
 
                     if (this.selectedItem.Value1) {
                         datasetsValues.push({
-                            label: estruturaValue1[estruturaValue1.length-1],
+                            label: estruturaValue1[estruturaValue1.length - 1],
                             data: valores,
                             backgroundColor: this.backgroundColors()[0],
                             borderColor: this.borderColors()[0],
@@ -96,7 +115,7 @@ export class HomePage {
                         var estruturaValue2 = this.selectedItem.Value2.split(".");
                         valores = this.getValueToKeys(result.json(), this.selectedItem.Value2, estruturaValue2, 0, '');
                         datasetsValues.push({
-                            label: estruturaValue2[estruturaValue2.length-1],
+                            label: estruturaValue2[estruturaValue2.length - 1],
                             data: valores,
                             backgroundColor: this.backgroundColors()[1],
                             borderColor: this.borderColors()[1],
@@ -320,7 +339,7 @@ export class HomePage {
         });
     }
 
-    constructor(public navCtrl: NavController, public http: Http, public navParams: NavParams) {
+    constructor(public navCtrl: NavController, public http: Http, public navParams: NavParams, public toastCtrl: ToastController) {
         this.selectedItem = navParams.get('item');
         if (this.selectedItem) {
             this.Title = this.selectedItem.NameRel;
