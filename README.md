@@ -11,7 +11,7 @@ Está licenciada sobre a [*LGPL*](https://pt.wikipedia.org/wiki/GNU_Lesser_Gener
 [Ionic](https://ionicframework.com)
 
 ```npm
-npm instal -g ionic cordova
+npm install -g ionic cordova
 ```
 #Para iniciar a aplicação
 
@@ -25,5 +25,6 @@ ionic serve
 
 Grupo [Discord](https://discord.gg/hgBdp6V) para discussão
 
+#Link API para teste
 
-
+[Link 1](https://api-useast.graphcms.com/v1/cjn63vfmt3lal01glugxmfeg8/master?query=query{vendaAnuals{id%20ano%20valor%20meta}})
