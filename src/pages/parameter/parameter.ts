@@ -50,8 +50,8 @@ export class ParameterPage {
     for (var key in obj) {
       keys.push(key);
       if (Array.isArray(obj[key])) {
-        var subkeys = this.getDeepKeys(obj[key][0]);
-        keys = keys.concat(subkeys.map(function (subkey) {
+        var subkeysArray = this.getDeepKeys(obj[key][0]);
+        keys = keys.concat(subkeysArray.map(function (subkey) {
           return key + "." + subkey;
         }));
       } else if (typeof obj[key] === "object") {

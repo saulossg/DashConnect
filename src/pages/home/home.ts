@@ -80,9 +80,9 @@ export class HomePage {
                     var estruturaValue1 = this.selectedItem.Value1.split(".");
                     var datasetsValues = []
                     var chaves = this.getValueToKeys(result.json(), this.selectedItem.Descr, estruturaChave, 0, '');
+                    var valores = this.getValueToKeys(result.json(), this.selectedItem.Value1, estruturaValue1, 0, '');
 
                     if (this.selectedItem.Value1) {
-                        var valores = this.getValueToKeys(result.json(), this.selectedItem.Value1, estruturaValue1, 0, '');
                         datasetsValues.push({
                             label: estruturaValue1[estruturaValue1.length-1],
                             data: valores,
@@ -94,7 +94,7 @@ export class HomePage {
 
                     if (this.selectedItem.Value2) {
                         var estruturaValue2 = this.selectedItem.Value2.split(".");
-                        var valores = this.getValueToKeys(result.json(), this.selectedItem.Value2, estruturaValue2, 0, '');
+                        valores = this.getValueToKeys(result.json(), this.selectedItem.Value2, estruturaValue2, 0, '');
                         datasetsValues.push({
                             label: estruturaValue2[estruturaValue2.length-1],
                             data: valores,
