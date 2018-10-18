@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, LoadingController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { Chart } from 'chart.js';
 
@@ -81,6 +81,9 @@ export class HomePage {
     }
 
     gerarRelatorio() {
+        let loading = this.loadingCtrl.create({ content: 'Aguarde' });
+        loading.present();
+
         return new Promise((resolve, reject) => {
 
             this.http.get(this.selectedItem.UrlApi)
@@ -336,10 +339,12 @@ export class HomePage {
                 (error) => {
                     reject(error.json());
                 });
+
+            loading.dismiss();
         });
     }
 
-    constructor(public navCtrl: NavController, public http: Http, public navParams: NavParams, public toastCtrl: ToastController) {
+    constructor(public navCtrl: NavController, public http: Http, public navParams: NavParams, public toastCtrl: ToastController, public loadingCtrl: LoadingController) {
         this.selectedItem = navParams.get('item');
         if (this.selectedItem) {
             this.Title = this.selectedItem.NameRel;
