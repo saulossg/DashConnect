@@ -6,6 +6,7 @@
 
 'use strict';
 importScripts('./build/sw-toolbox.js');
+importScripts('/cache-polyfill.js');
 
 self.toolbox.options.cache = {
   name: 'ionic-cache'
@@ -19,6 +20,7 @@ self.toolbox.precache(
     './build/main.css',
     './build/polyfills.js',
     'index.html',
+    'home.html',
     'manifest.json'
   ]
 );
