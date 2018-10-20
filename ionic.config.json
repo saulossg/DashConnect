@@ -1,7 +1,0 @@
-{
-  "name": "DashConnect",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "ionic-angular"
-}

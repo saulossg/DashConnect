@@ -19,6 +19,7 @@ self.toolbox.precache(
     './build/main.css',
     './build/polyfills.js',
     'index.html',
+    'home.html',
     'manifest.json'
   ]
 );
