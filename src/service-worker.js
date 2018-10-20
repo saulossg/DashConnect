@@ -6,7 +6,6 @@
 
 'use strict';
 importScripts('./build/sw-toolbox.js');
-importScripts('/cache-polyfill.js');
 
 self.toolbox.options.cache = {
   name: 'ionic-cache'

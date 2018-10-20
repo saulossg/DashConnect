@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { NavController, NavParams, ToastController, LoadingController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { Chart } from 'chart.js';
+import { Storage } from '@ionic/storage';
 
 import { ParameterPage } from '../parameter/parameter';
 
@@ -59,6 +60,15 @@ export class HomePage {
             'rgba(201, 203, 207, 0.2)']
     }
 
+    doRefresh(refresher) {
+        console.log('Begin async operation', refresher);
+
+        setTimeout(() => {
+            console.log('Async operation has ended');
+            refresher.complete();
+        }, 2000);
+    }
+
     getValueToKeys(obj, findKey, estrutura, index, comb) {
         var values = [];
         comb += estrutura[0];
@@ -88,263 +98,38 @@ export class HomePage {
 
             this.http.get(this.selectedItem.UrlApi)
                 .subscribe((result: any) => {
-                    if (!this.selectedItem.Descr) {
-                        this.exibirMensagem('Não foi localizado o eixo de descrição do relatório.');
-                        return;
-                    }
-
-                    if (!this.selectedItem.Value1) {
-                        this.exibirMensagem('Não foi localizado o eixo de valore do relatório.');
-                        return;
-                    }
-
-                    var estruturaChave = this.selectedItem.Descr.split(".");
-                    var estruturaValue1 = this.selectedItem.Value1.split(".");
-                    var datasetsValues = []
-                    var chaves = this.getValueToKeys(result.json(), this.selectedItem.Descr, estruturaChave, 0, '');
-                    var valores = this.getValueToKeys(result.json(), this.selectedItem.Value1, estruturaValue1, 0, '');
-
-                    if (this.selectedItem.Value1) {
-                        datasetsValues.push({
-                            label: estruturaValue1[estruturaValue1.length - 1],
-                            data: valores,
-                            backgroundColor: this.backgroundColors()[0],
-                            borderColor: this.borderColors()[0],
-                            borderWidth: 1
-                        })
-                    }
-
-                    if (this.selectedItem.Value2) {
-                        var estruturaValue2 = this.selectedItem.Value2.split(".");
-                        valores = this.getValueToKeys(result.json(), this.selectedItem.Value2, estruturaValue2, 0, '');
-                        datasetsValues.push({
-                            label: estruturaValue2[estruturaValue2.length - 1],
-                            data: valores,
-                            backgroundColor: this.backgroundColors()[1],
-                            borderColor: this.borderColors()[1],
-                            borderWidth: 1
-                        })
-                    }
-
-                    if (this.selectedItem.Grafico === 'barraH')
-                        this.barChart = new Chart(this.barCanvas.nativeElement, {
-                            type: 'horizontalBar',
-                            data: {
-                                labels: chaves,
-                                datasets: datasetsValues
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                            beginAtZero: true
-                                        }
-                                    }]
+                    this.exibirDadosRelatorio(result.json());
+                    var itens = []
+                    this.storage.get('MenuDash').then(storeData => {
+                        if (storeData) {
+                            for (let i = 0; i <= storeData.length - 1; i++) {
+                                if (storeData[i].NameRel === this.selectedItem.NameRel) {
+                                    storeData[i].ResultCache = result.json();
+                                    this.selectedItem.ResultCache = result.json();
+                                    break;
                                 }
                             }
-
-                        });
-
-                    if (this.selectedItem.Grafico === 'barraV')
-                        this.barChart = new Chart(this.barCanvas.nativeElement, {
-                            type: 'bar',
-                            data: {
-                                labels: chaves,
-                                datasets: datasetsValues
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                            beginAtZero: true
-                                        }
-                                    }],
-                                }
-                            }
-                        });
-
-
-                    if (this.selectedItem.Grafico === 'bolha')
-                        this.bubbleChart = new Chart(this.bubbleCanvas.nativeElement, {
-                            type: 'bubble',
-                            data: {
-                                labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0]
-                                }]
-                            }
-                        });
-
-                    if (this.selectedItem.Grafico === 'linha')
-                        this.lineChar = new Chart(this.lineCanvas.nativeElement, {
-
-                            type: 'line',
-                            data: {
-                                labels: chaves,
-                                datasets: [
-                                    {
-                                        label: this.selectedItem.NameRel,
-                                        fill: false,
-                                        lineTension: 0.1,
-                                        backgroundColor: this.backgroundColors()[0],
-                                        borderColor: this.borderColors()[0],
-                                        borderCapStyle: 'butt',
-                                        borderDash: [],
-                                        borderDashOffset: 0.0,
-                                        borderJoinStyle: 'miter',
-                                        pointBorderColor: "rgba(75,192,192,1)",
-                                        pointBackgroundColor: "#fff",
-                                        pointBorderWidth: 1,
-                                        pointHoverRadius: 5,
-                                        pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                                        pointHoverBorderColor: "rgba(220,220,220,1)",
-                                        pointHoverBorderWidth: 2,
-                                        pointRadius: 1,
-                                        pointHitRadius: 10,
-                                        data: valores,
-                                        spanGaps: false,
-                                    }
-                                ]
-                            }
-
-                        });
-
-                    if (this.selectedItem.Grafico === 'mix')
-                        this.mixedChart = new Chart(this.mixedCanvas.nativeElement, {
-                            type: 'bar',
-                            data: {
-                                labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0],
-                                    hoverBackgroundColor: [
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56",
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56"
-                                    ]
-                                },
-                                {
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0],
-                                    hoverBackgroundColor: [
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56",
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56"
-                                    ],
-                                    type: 'line'
-                                }]
-                            }
-                        });
-
-                    if (this.selectedItem.Grafico === 'pizza')
-                        this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
-                            type: 'pie',
-                            data: {
-                                labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0],
-                                    hoverBackgroundColor: [
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56",
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56"
-                                    ]
-                                }]
-                            }
-                        });
-
-                    if (this.selectedItem.Grafico === 'polar')
-                        this.polarChart = new Chart(this.polarCanvas.nativeElement, {
-                            type: 'polarArea',
-                            data: {
-                                labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0],
-                                    hoverBackgroundColor: [
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56",
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56"
-                                    ]
-                                }]
-                            }
-                        });
-
-                    if (this.selectedItem.Grafico === 'radar')
-                        this.radarChart = new Chart(this.radarCanvas.nativeElement, {
-                            type: 'radar',
-                            data: {
-                                labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0]
-                                }, {
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0]
-                                }]
-                            }
-                        });
-
-                    if (this.selectedItem.Grafico === 'rosca')
-                        this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
-                            type: 'doughnut',
-                            data: {
-                                labels: chaves,
-                                datasets: [{
-                                    label: this.selectedItem.NameRel,
-                                    data: valores,
-                                    backgroundColor: this.backgroundColors()[0],
-                                    borderColor: this.borderColors()[0],
-                                    hoverBackgroundColor: [
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56",
-                                        "#FF6384",
-                                        "#36A2EB",
-                                        "#FFCE56"
-                                    ]
-                                }]
-                            }
-                        });
-
+                            itens = storeData;
+                            this.storage.set('MenuDash', itens);
+                        }
+                    });
 
                 },
                 (error) => {
-                    reject(error.json());
+                    if (this.selectedItem.ResultCache)
+                        this.exibirDadosRelatorio(this.selectedItem.ResultCache);
+                    else
+                        reject(error.json());
                 });
 
             loading.dismiss();
+        }).then(() => {
+            if (this.selectedItem.ResultCache)
+                this.exibirDadosRelatorio(this.selectedItem.ResultCache);
         });
     }
 
-    constructor(public navCtrl: NavController, public http: Http, public navParams: NavParams, public toastCtrl: ToastController, public loadingCtrl: LoadingController) {
+    constructor(public navCtrl: NavController, public http: Http, public navParams: NavParams, public toastCtrl: ToastController, public loadingCtrl: LoadingController, private storage: Storage) {
         this.selectedItem = navParams.get('item');
         if (this.selectedItem) {
             this.Title = this.selectedItem.NameRel;
@@ -357,5 +142,252 @@ export class HomePage {
         this.navCtrl.push(ParameterPage);
     }
 
+    exibirDadosRelatorio(result) {
+        if (!this.selectedItem.Descr) {
+            this.exibirMensagem('Não foi localizado o eixo de descrição do relatório.');
+            return;
+        }
+
+        if (!this.selectedItem.Value1) {
+            this.exibirMensagem('Não foi localizado o eixo de valore do relatório.');
+            return;
+        }
+
+        var estruturaChave = this.selectedItem.Descr.split(".");
+        var estruturaValue1 = this.selectedItem.Value1.split(".");
+        var datasetsValues = []
+        var chaves = this.getValueToKeys(result, this.selectedItem.Descr, estruturaChave, 0, '');
+        var valores = this.getValueToKeys(result, this.selectedItem.Value1, estruturaValue1, 0, '');
+
+        if (this.selectedItem.Value1) {
+            datasetsValues.push({
+                label: estruturaValue1[estruturaValue1.length - 1],
+                data: valores,
+                backgroundColor: this.backgroundColors()[0],
+                borderColor: this.borderColors()[0],
+                borderWidth: 1
+            })
+        }
+
+        if (this.selectedItem.Value2) {
+            var estruturaValue2 = this.selectedItem.Value2.split(".");
+            valores = this.getValueToKeys(result, this.selectedItem.Value2, estruturaValue2, 0, '');
+            datasetsValues.push({
+                label: estruturaValue2[estruturaValue2.length - 1],
+                data: valores,
+                backgroundColor: this.backgroundColors()[1],
+                borderColor: this.borderColors()[1],
+                borderWidth: 1
+            })
+        }
+
+        if (this.selectedItem.Grafico === 'barraH')
+            this.barChart = new Chart(this.barCanvas.nativeElement, {
+                type: 'horizontalBar',
+                data: {
+                    labels: chaves,
+                    datasets: datasetsValues
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+
+            });
+
+        if (this.selectedItem.Grafico === 'barraV')
+            this.barChart = new Chart(this.barCanvas.nativeElement, {
+                type: 'bar',
+                data: {
+                    labels: chaves,
+                    datasets: datasetsValues
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                    }
+                }
+            });
+
+
+        if (this.selectedItem.Grafico === 'bolha')
+            this.bubbleChart = new Chart(this.bubbleCanvas.nativeElement, {
+                type: 'bubble',
+                data: {
+                    labels: chaves,
+                    datasets: [{
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0]
+                    }]
+                }
+            });
+
+        if (this.selectedItem.Grafico === 'linha')
+            this.lineChar = new Chart(this.lineCanvas.nativeElement, {
+
+                type: 'line',
+                data: {
+                    labels: chaves,
+                    datasets: [
+                        {
+                            label: this.selectedItem.NameRel,
+                            fill: false,
+                            lineTension: 0.1,
+                            backgroundColor: this.backgroundColors()[0],
+                            borderColor: this.borderColors()[0],
+                            borderCapStyle: 'butt',
+                            borderDash: [],
+                            borderDashOffset: 0.0,
+                            borderJoinStyle: 'miter',
+                            pointBorderColor: "rgba(75,192,192,1)",
+                            pointBackgroundColor: "#fff",
+                            pointBorderWidth: 1,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                            pointHoverBorderWidth: 2,
+                            pointRadius: 1,
+                            pointHitRadius: 10,
+                            data: valores,
+                            spanGaps: false,
+                        }
+                    ]
+                }
+
+            });
+
+        if (this.selectedItem.Grafico === 'mix')
+            this.mixedChart = new Chart(this.mixedCanvas.nativeElement, {
+                type: 'bar',
+                data: {
+                    labels: chaves,
+                    datasets: [{
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0],
+                        hoverBackgroundColor: [
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56",
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56"
+                        ]
+                    },
+                    {
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0],
+                        hoverBackgroundColor: [
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56",
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56"
+                        ],
+                        type: 'line'
+                    }]
+                }
+            });
+
+        if (this.selectedItem.Grafico === 'pizza')
+            this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
+                type: 'pie',
+                data: {
+                    labels: chaves,
+                    datasets: [{
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0],
+                        hoverBackgroundColor: [
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56",
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56"
+                        ]
+                    }]
+                }
+            });
+
+        if (this.selectedItem.Grafico === 'polar')
+            this.polarChart = new Chart(this.polarCanvas.nativeElement, {
+                type: 'polarArea',
+                data: {
+                    labels: chaves,
+                    datasets: [{
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0],
+                        hoverBackgroundColor: [
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56",
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56"
+                        ]
+                    }]
+                }
+            });
+
+        if (this.selectedItem.Grafico === 'radar')
+            this.radarChart = new Chart(this.radarCanvas.nativeElement, {
+                type: 'radar',
+                data: {
+                    labels: chaves,
+                    datasets: [{
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0]
+                    }, {
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0]
+                    }]
+                }
+            });
+
+        if (this.selectedItem.Grafico === 'rosca')
+            this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
+                type: 'doughnut',
+                data: {
+                    labels: chaves,
+                    datasets: [{
+                        label: this.selectedItem.NameRel,
+                        data: valores,
+                        backgroundColor: this.backgroundColors()[0],
+                        borderColor: this.borderColors()[0],
+                        hoverBackgroundColor: [
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56",
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56"
+                        ]
+                    }]
+                }
+            });
+    }
 
 }

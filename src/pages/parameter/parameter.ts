@@ -11,7 +11,7 @@ import { Http } from '@angular/http';
 })
 
 export class ParameterPage {
-  item: { NameRel?: string, UrlApi?: string, Grafico?: string, Descr?: string, Value1?: string, Value2?: string };
+  item: { NameRel?: string, UrlApi?: string, Grafico?: string, Descr?: string, Value1?: string, Value2?: string, ResultCache?: any };
   itens: Array<{ NameRel?: string, UrlApi?: string, Grafico?: string }>;
   retornoApi: any;
 
@@ -19,9 +19,7 @@ export class ParameterPage {
     this.itens = [];
     this.storage.get('MenuDash').then(data => {
       if (data) {
-        for (let i = 0; i <= data.length - 1; i++) {
-          this.itens.push(data[i]);
-        }
+        this.itens = data;
       }
     });
 
@@ -32,6 +30,7 @@ export class ParameterPage {
       Descr: '',
       Value1: '',
       Value2: '',
+      ResultCache: {},
     };
   }
 

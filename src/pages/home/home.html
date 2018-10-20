@@ -10,6 +10,14 @@
 <ion-content padding>
   <h3>DashConnect</h3>
 
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-dropdown"
+      refreshingSpinner="circles"
+      refreshingText="Atualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
   <p>
     Para mais informações acesse <a href="https://github.com/Bertoncini/DashConnect">DashConnect</a>.
   </p>
@@ -20,11 +28,10 @@
 
   <ion-card *ngIf="(selectedItem?.Grafico === 'barraH') || (selectedItem?.Grafico === 'barraV')">
     <ion-card-header>
-      {{selectedItem.NameRel}}
+      {{selectedItem?.NameRel}}
     </ion-card-header>
     <ion-card-content>
       <canvas #barCanvas></canvas>
-      <img #Idtes >
     </ion-card-content>
   </ion-card>
 
